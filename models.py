@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import Optional
 
 from sqlalchemy import and_, Column, Float, Integer
 from sqlmodel import Field, Relationship, SQLModel, Session, create_engine
@@ -37,7 +37,7 @@ class Person(SQLModel, table=True):
     finalGame: Optional[str] = None
     retroID: Optional[str] = None
 
-    batting: List["Batting"] = Relationship(back_populates="player")
+    batting: list[Batting] = Relationship(back_populates="player")
 
 
 class Team(SQLModel, table=True):
@@ -94,7 +94,7 @@ class Team(SQLModel, table=True):
     teamIDlahman45: Optional[str] = None
     teamIDretro: Optional[str] = None
 
-    batting: List["Batting"] = Relationship(back_populates="team")
+    batting: list[Batting] = Relationship(back_populates="team")
 
 
 class Batting(SQLModel, table=True):
@@ -149,3 +149,6 @@ def get_session(engine: "Engine") -> Session:
     """Return a SQLModel Session bound to the given engine."""
 
     return Session(engine)
+
+
+engine = get_engine()

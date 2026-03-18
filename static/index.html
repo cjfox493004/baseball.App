@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baseball Statistics</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="header-brand">
+                <h1 class="brand-title">⚾ Baseball Stats</h1>
+                <p class="brand-subtitle">Explore historical baseball data</p>
+            </div>
+            <nav class="header-nav">
+                <a href="#" class="nav-link active">Statistics</a>
+                <a href="#" class="nav-link">Teams</a>
+                <a href="#" class="nav-link">Players</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <section class="hero-section">
+            <div class="hero-content">
+                <h2>Dive into Baseball History</h2>
+                <p>Select a year to explore detailed statistics, top performers, and team records.</p>
+            </div>
+        </section>
+
+        <section class="filter-section">
+            <div class="filter-container">
+                <label for="year-select" class="filter-label">Select Year:</label>
+                <div class="select-wrapper">
+                    <select id="year-select" class="year-select">
+                        <option value="">Loading years...</option>
+                    </select>
+                </div>
+                <button id="submit-btn" class="submit-btn">View Statistics</button>
+            </div>
+        </section>
+
+        <section class="results-section" id="results" style="display: none;">
+            <div class="results-container">
+                <h3 id="results-title"></h3>
+                <p id="results-message"></p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 Baseball Statistics Platform. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
