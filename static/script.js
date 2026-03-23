@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         if (players && players.length > 0) {
                             players.forEach(player => {
-                                playersHtml += `<div class="player-item">${player.firstName} ${player.lastName}</div>`;
+                                playersHtml += `<div class="player-item" data-player-id="${player.playerID}" data-year="${year}" style="cursor: pointer;">${player.firstName} ${player.lastName}</div>`;
                             });
                         } else {
                             playersHtml += '<div class="player-item">No players found</div>';
@@ -147,6 +147,29 @@ document.addEventListener('DOMContentLoaded', function() {
                                 modal.style.display = 'none';
                             }
                         });
+                        
+                        // Add click event listeners to player items
+                        document.querySelectorAll('.player-item[data-player-id]').forEach(item => {
+                            item.addEventListener('click', async function() {
+                                const playerID = this.getAttribute('data-player-id');
+                                const year = this.getAttribute('data-year');
+                                
+                                try {
+                                    const response = await fetch(`/player/${playerID}?year=${year}`);
+                                    const data = await response.json();
+                                    
+                                    if (data.error) {
+                                        alert('Player not found');
+                                        return;
+                                    }
+                                    
+                                    showPlayerCard(data.bio, data.stats, year);
+                                } catch (error) {
+                                    console.error('Error fetching player details:', error);
+                                    alert('Error fetching player details: ' + error.message);
+                                }
+                            });
+                        });
                     } catch (error) {
                         console.error('Error fetching players:', error);
                         alert('Error fetching players: ' + error.message);
@@ -159,3 +182,113 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+function showPlayerCard(bio, stats, year) {
+    // Create player card modal
+    let cardModal = document.getElementById('player-card-modal');
+    if (!cardModal) {
+        cardModal = document.createElement('div');
+        cardModal.id = 'player-card-modal';
+        cardModal.className = 'modal';
+        document.body.appendChild(cardModal);
+    }
+    
+    // Calculate age if birth year is available
+    let age = '';
+    if (bio.birthYear) {
+        age = ` (${year - bio.birthYear} years old in ${year})`;
+    }
+    
+    // Format birth date
+    let birthDate = '';
+    if (bio.birthYear && bio.birthMonth && bio.birthDay) {
+        birthDate = `${bio.birthMonth}/${bio.birthDay}/${bio.birthYear}`;
+    } else if (bio.birthYear) {
+        birthDate = bio.birthYear.toString();
+    }
+    
+    let cardHtml = `
+        <div class="player-card-panel">
+            <div class="player-card-header">
+                <button class="close-btn">×</button>
+                <h3>${bio.nameFirst} ${bio.nameLast}${age}</h3>
+            </div>
+            <div class="player-card-content">
+                <div class="player-bio">
+                    <h4>Biographical Information</h4>
+                    <div class="bio-grid">
+                        ${birthDate ? `<div class="bio-item"><strong>Birth Date:</strong> ${birthDate}</div>` : ''}
+                        ${bio.birthCity || bio.birthState || bio.birthCountry ? `<div class="bio-item"><strong>Birth Place:</strong> ${[bio.birthCity, bio.birthState, bio.birthCountry].filter(Boolean).join(', ')}</div>` : ''}
+                        ${bio.height ? `<div class="bio-item"><strong>Height:</strong> ${bio.height}"</div>` : ''}
+                        ${bio.weight ? `<div class="bio-item"><strong>Weight:</strong> ${bio.weight} lbs</div>` : ''}
+                        ${bio.bats ? `<div class="bio-item"><strong>Bats:</strong> ${bio.bats}</div>` : ''}
+                        ${bio.throws ? `<div class="bio-item"><strong>Throws:</strong> ${bio.throws}</div>` : ''}
+                        ${bio.debut ? `<div class="bio-item"><strong>MLB Debut:</strong> ${bio.debut}</div>` : ''}
+                        ${bio.finalGame ? `<div class="bio-item"><strong>Final Game:</strong> ${bio.finalGame}</div>` : ''}
+                    </div>
+                </div>
+                <div class="player-stats">
+                    <h4>${year} Batting Statistics</h4>
+                    <canvas id="stats-chart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    cardModal.innerHTML = cardHtml;
+    cardModal.style.display = 'flex';
+    
+    // Close modal on close button click
+    cardModal.querySelector('.close-btn').addEventListener('click', function() {
+        cardModal.style.display = 'none';
+    });
+    
+    // Close modal when clicking outside the panel
+    cardModal.addEventListener('click', function(e) {
+        if (e.target === cardModal) {
+            cardModal.style.display = 'none';
+        }
+    });
+    
+    // Create chart if stats exist
+    if (stats && stats.length > 0) {
+        const stat = stats[0]; // Assuming one stat record per year
+        
+        const ctx = document.getElementById('stats-chart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Games', 'At Bats', 'Hits', 'Home Runs', 'RBIs', 'Stolen Bases', 'Walks', 'Strikeouts'],
+                datasets: [{
+                    label: `${year} Stats`,
+                    data: [
+                        stat.G || 0,
+                        stat.AB || 0,
+                        stat.H || 0,
+                        stat.HR || 0,
+                        stat.RBI || 0,
+                        stat.SB || 0,
+                        stat.BB || 0,
+                        stat.SO || 0
+                    ],
+                    backgroundColor: 'rgba(0, 51, 102, 0.8)',
+                    borderColor: 'rgba(0, 51, 102, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+}

@@ -457,8 +457,80 @@ body {
     border-radius: 4px;
     font-size: 15px;
     color: #333;
+    transition: all 0.3s ease;
+}
+
+.player-item:hover {
+    background-color: #e8f4fd;
+    border-left-color: #ffcc00;
+    transform: translateX(4px);
 }
 
 .player-item:last-child {
     margin-bottom: 0;
+}
+
+/* Player Card Modal */
+.player-card-panel {
+    background-color: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.player-card-header {
+    background: linear-gradient(135deg, #003366 0%, #004d99 100%);
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.player-card-header h3 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.player-card-content {
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.player-bio h4,
+.player-stats h4 {
+    color: #003366;
+    margin-bottom: 15px;
+    font-size: 18px;
+    border-bottom: 2px solid #ffcc00;
+    padding-bottom: 5px;
+}
+
+.bio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 10px;
+}
+
+.bio-item {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 4px;
+    border-left: 3px solid #004d99;
+}
+
+.bio-item strong {
+    color: #003366;
+}
+
+.player-stats {
+    text-align: center;
 }
